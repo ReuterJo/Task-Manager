@@ -1,27 +1,66 @@
-import logo from './logo.svg';
 import './App.css';
-import Button from '@mui/material/Button'
+import { React, useState } from 'react';
+import TaskTree from './components/TaskTree';
+import Form from './components/Form';
 
-function App() {
+export default function App() {
+  const [tasks, setTasks] = useState(initialTasks);
+  const root = tasks[0];
+  const taskIds = root.childIds;
+
+  function handleAddTask(text) {
+    setTasks([
+      ...tasks,
+      {
+        id: nextId++,
+        text: text,
+        done: false,
+      },
+    ]);
+  }
+
+  function handleUpdateTask(task) {
+    setTasks(
+      tasks.map((t) => {
+        if (t.id === task.id) {
+          return task;
+        } else {
+          return t;
+        }
+      })
+    );
+  }
+
+  function handleDeleteTask(taskId) {
+    setTasks(tasks.filter((t) => t.id !== taskId));
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Button variant="contained">Hello world</Button>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h2>Your Tasks</h2>
+      <ul>
+        {taskIds.map((id) => (
+          <TaskTree 
+            key={id}
+            id={id}
+            parentId={0}
+            tasksById={tasks}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
+          />
+        ))}
+      </ul>
+      <Form onAddTask={handleAddTask} />
+    </>
   );
 }
 
-export default App;
+let nextId = 6;
+const initialTasks = {
+  0: {id: 0, text: '(Root)', done: true, childIds: [1, 2, 5]},
+  1: {id: 1, text: 'Hello world', done: true, childIds: []},
+  2: {id: 2, text: 'Goodnight moon', done: false, childIds: [3, 4]},
+  3: {id: 3, text: 'Little bunny foo-foo', done: false, childIds: []},
+  4: {id: 4, text: 'Making it happen', done: false, childIds: []},
+  5: {id: 5, text: 'One day at a time', done: false, childIds: []},
+};
