@@ -14,8 +14,9 @@ export default function App() {
   const [tasks, setTasks] = useState(initialTasks);
   const [filter, setFilter] = useState("All");
   const [formText, setFormText] = useState('');
-  const [formShow, setFormShow] = useState(false);
+  const [formState, setFormState] = useState('Hidden');
   const [taskState, setTaskState] = useState('Displaying');
+  const [activeTaskId, setActiveTaskId] = useState(null);
 
   const root = tasks[0];
   const taskIds = root.childIds;
@@ -33,12 +34,16 @@ export default function App() {
     setFormText(text);
   }
 
-  function handleFormShow(bool) {
-    setFormShow(bool);
+  function handleFormState(state) {
+    setFormState(state);
   }
 
   function handleTaskState(state) {
     setTaskState(state);
+  }
+
+  function handleActiveTaskId(id) {
+    setActiveTaskId(id);
   }
 
   // Adds a task at the top level, make this more generalizable with parentId given as a parameter
@@ -123,22 +128,27 @@ export default function App() {
             parentId={0}
             taskState={taskState}
             onUpdateTaskState={handleTaskState}
+            onUpdateActiveTaskId={handleActiveTaskId}
             tasksById={tasks}
             filter={FILTER_MAP[filter]}
             onCompleteTask={handleCompleteTask}
             onDeleteTask={handleDeleteTask}
             onUpdateFormText={handleFormText}
-            onUpdateFormShow={handleFormShow}
+            onUpdateFormState={handleFormState}
           />
         ))}
       </ul>
       <Form
+        activeTaskId={activeTaskId}
+        onUpdateActiveTaskId={handleActiveTaskId}
+        tasksById={tasks}
         formText={formText}
-        formShow={formShow}
+        formState={formState}
         onUpdateTaskState={handleTaskState}
         onUpdateFormText={handleFormText}
-        onUpdateFormShow={handleFormShow}
+        onUpdateFormState={handleFormState}
         onAddTask={handleAddTask}
+        onUpdateTask={handleUpdateTask}
       />
     </>
   );

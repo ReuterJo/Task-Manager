@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Task({task, parentId, taskState, onUpdateTask, onComplete, onDelete, onUpdateText, onUpdateShow}) {
+export default function Task({task, parentId, taskState, onUpdateTask, onUpdateActiveTaskId, onComplete, onDelete, onUpdateText, onUpdateState}) {
 
     let taskContent;
     switch (taskState) {
@@ -8,27 +8,9 @@ export default function Task({task, parentId, taskState, onUpdateTask, onComplet
             taskContent = (
                 <>
                     {task.text}
-                    <button
-                        disabled 
-                        onClick={() => {
-                            onUpdateTask('Editing');
-                            onUpdateText(task.text);
-                            onUpdateShow(true);
-                        }}
-                    >
-                        Edit
-                    </button>
-                    <button disabled onClick={() => onDelete(task.id, parentId)}>Delete</button>
-                    <button
-                        disabled 
-                        onClick={() => {
-                            onUpdateTask('Adding');
-                            onUpdateText('');
-                            onUpdateShow(true);
-                        }}
-                    >
-                        Add Subtask
-                    </button>
+                    <button disabled>Edit</button>
+                    <button disabled>Delete</button>
+                    <button disabled>Add Subtask</button>
                 </>
             );
             break;
@@ -36,27 +18,9 @@ export default function Task({task, parentId, taskState, onUpdateTask, onComplet
             taskContent = (
                 <>
                     {task.text}
-                    <button
-                        disabled 
-                        onClick={() => {
-                            onUpdateTask('Editing');
-                            onUpdateText(task.text);
-                            onUpdateShow(true);
-                        }}
-                    >
-                        Edit
-                    </button>
-                    <button disabled onClick={() => onDelete(task.id, parentId)}>Delete</button>
-                    <button
-                        disabled 
-                        onClick={() => {
-                            onUpdateTask('Adding');
-                            onUpdateText('');
-                            onUpdateShow(true);
-                        }}
-                    >
-                        Add Subtask
-                    </button>
+                    <button disabled>Edit</button>
+                    <button disabled>Delete</button>
+                    <button disabled>Add Subtask</button>
                 </>
             );
             break;
@@ -68,7 +32,8 @@ export default function Task({task, parentId, taskState, onUpdateTask, onComplet
                         onClick={() => {
                             onUpdateTask('Editing');
                             onUpdateText(task.text);
-                            onUpdateShow(true);
+                            onUpdateActiveTaskId(task.id);
+                            onUpdateState('Edit Task');
                         }}
                     >
                         Edit
@@ -78,7 +43,7 @@ export default function Task({task, parentId, taskState, onUpdateTask, onComplet
                         onClick={() => {
                             onUpdateTask('Adding');
                             onUpdateText('');
-                            onUpdateShow(true);
+                            onUpdateState('Add Subtask');
                         }}
                     >
                         Add Subtask

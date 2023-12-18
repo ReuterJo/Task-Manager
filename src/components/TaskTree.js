@@ -1,7 +1,7 @@
 import React from 'react';
 import Task from './Task'
 
-export default function TaskTree({id, parentId, taskState, onUpdateTaskState, tasksById, filter, onCompleteTask, onDeleteTask, onUpdateFormText, onUpdateFormShow}) {
+export default function TaskTree({id, parentId, taskState, onUpdateTaskState, onUpdateActiveTaskId, tasksById, filter, onCompleteTask, onDeleteTask, onUpdateFormText, onUpdateFormState}) {
     const task = tasksById[id];
     const childIds = task.childIds;
     if (filter(task)) {
@@ -12,10 +12,11 @@ export default function TaskTree({id, parentId, taskState, onUpdateTaskState, ta
                     parentId={parentId}
                     taskState={taskState}
                     onUpdateTask={onUpdateTaskState}
+                    onUpdateActiveTaskId={onUpdateActiveTaskId}
                     onComplete={onCompleteTask}
                     onDelete={onDeleteTask}
                     onUpdateText={onUpdateFormText}
-                    onUpdateShow={onUpdateFormShow}
+                    onUpdateState={onUpdateFormState}
                 />
                 {childIds.length > 0 && 
                     <ul>
@@ -26,12 +27,13 @@ export default function TaskTree({id, parentId, taskState, onUpdateTaskState, ta
                                 parentId={id}
                                 taskState={taskState}
                                 onUpdateTaskState={onUpdateTaskState}
+                                onUpdateActiveTaskId={onUpdateActiveTaskId}
                                 tasksById={tasksById}
                                 filter={filter}
                                 onCompleteTask={onCompleteTask}
                                 onDeleteTask={onDeleteTask}
                                 onUpdateFormText={onUpdateFormText}
-                                onUpdateFormShow={onUpdateFormShow}
+                                onUpdateFormState={onUpdateFormState}
                             />
                         ))}
                     </ul>
