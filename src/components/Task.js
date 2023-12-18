@@ -1,6 +1,6 @@
 import { React, useState } from 'react';
 
-export default function Task({task, parentId, onUpdate, onDelete}) {
+export default function Task({task, parentId, onComplete, onUpdate, onDelete}) {
     const [isEditing, setIsEditing] = useState(false);
     let taskContent;
     if (isEditing) {
@@ -32,7 +32,7 @@ export default function Task({task, parentId, onUpdate, onDelete}) {
                 type="checkbox"
                 checked={task.done}
                 onChange={(e) => {
-                    onUpdate({
+                    onComplete(task.id, {
                         ...task,
                         done: e.target.checked,
                     });

@@ -2,11 +2,28 @@ import './App.css';
 import { React, useState } from 'react';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
+import FilterButton from './components/FilterButton'
+
+const FILTER_MAP = {
+  All: () => true,
+  Active: (task) => !task.done,
+}
+const FILTER_NAMES = Object.keys(FILTER_MAP);
 
 export default function App() {
   const [tasks, setTasks] = useState(initialTasks);
+  const [filter, setFilter] = useState("All");
   const root = tasks[0];
   const taskIds = root.childIds;
+
+  const filterList = FILTER_NAMES.map((name) => (
+    <FilterButton
+      key={name}
+      name={name}
+      isPressed={name === filter}
+      setFilter={setFilter}
+    />
+  ));
 
   // Adds a task at the top level
   function handleAddTask(text) {
@@ -28,13 +45,41 @@ export default function App() {
     });
 
   }
-      
-  // Updates a task
+  
+  // Update task
   function handleUpdateTask(taskId, task) {
     setTasks({
       ...tasks,
       [taskId]: task
     });
+  }
+
+  // Updates a task, I need to update setTasks a single time, so I need to bundle the changes
+  function handleCompleteTask(taskId, task) {
+    setTasks((tasks) => ({
+      ...tasks,
+      [taskId]: task
+    }));
+    if (task.done && task.childIds.length > 0) {
+      task.childIds.map((childId) => handleCompleteTaskHelper(childId, 
+        {...tasks[childId],
+          done: true,
+        }));
+    }
+  }
+
+  // Helper function that updates child tasks
+  function handleCompleteTaskHelper(taskId, task) {
+    setTasks((tasks) => ({
+      ...tasks,
+      [taskId]: task
+    }));
+    if (task.childIds.length > 0) {
+      task.childIds.map((childId) => handleCompleteTaskHelper(childId, 
+        {...tasks[childId],
+          done: true,
+        }));
+    }
   }
 
   // Removes task from displayed tree, but not from the data model
@@ -53,6 +98,7 @@ export default function App() {
   return (
     <>
       <h2>Your Tasks</h2>
+      {filterList}
       <ul>
         {taskIds.map((id) => (
           <TaskTree 
@@ -60,6 +106,8 @@ export default function App() {
             id={id}
             parentId={0}
             tasksById={tasks}
+            filter={FILTER_MAP[filter]}
+            onCompleteTask={handleCompleteTask}
             onUpdateTask={handleUpdateTask}
             onDeleteTask={handleDeleteTask}
           />
@@ -70,12 +118,13 @@ export default function App() {
   );
 }
 
+// Static data for testing purposes
 let nextId = 6;
 const initialTasks = {
-  0: {id: 0, text: '(Root)', done: true, childIds: [1, 2, 5]},
+  0: {id: 0, text: '(Root)', done: true, childIds: [1, 2]},
   1: {id: 1, text: 'Hello world', done: true, childIds: []},
   2: {id: 2, text: 'Goodnight moon', done: false, childIds: [3, 4]},
-  3: {id: 3, text: 'Little bunny foo-foo', done: false, childIds: []},
+  3: {id: 3, text: 'Little bunny foo-foo', done: false, childIds: [5]},
   4: {id: 4, text: 'Making it happen', done: false, childIds: []},
   5: {id: 5, text: 'One day at a time', done: false, childIds: []},
 };
