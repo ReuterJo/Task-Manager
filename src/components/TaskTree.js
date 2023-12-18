@@ -1,7 +1,7 @@
 import React from 'react';
 import Task from './Task'
 
-export default function TaskTree({id, parentId, tasksById, filter, onCompleteTask, onUpdateTask, onDeleteTask}) {
+export default function TaskTree({id, parentId, tasksById, filter, onCompleteTask, onUpdateTask, onAddTask, onDeleteTask}) {
     const task = tasksById[id];
     const childIds = task.childIds;
     if (filter(task)) {
@@ -12,6 +12,7 @@ export default function TaskTree({id, parentId, tasksById, filter, onCompleteTas
                     parentId = {parentId}
                     onComplete={onCompleteTask}
                     onUpdate={onUpdateTask}
+                    onAdd={onAddTask}
                     onDelete={onDeleteTask}
                 />
                 {childIds.length > 0 && 
@@ -25,6 +26,7 @@ export default function TaskTree({id, parentId, tasksById, filter, onCompleteTas
                                 filter={filter}
                                 onCompleteTask={onCompleteTask}
                                 onUpdateTask={onUpdateTask}
+                                onAddTask={onAddTask}
                                 onDeleteTask={onDeleteTask}
                             />
                         ))}

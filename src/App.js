@@ -25,7 +25,7 @@ export default function App() {
     />
   ));
 
-  // Adds a task at the top level
+  // Adds a task at the top level, make this more generalizable with parentId given as a parameter
   function handleAddTask(text) {
     const newId = nextId++;
     const newTask = {
@@ -109,6 +109,7 @@ export default function App() {
             filter={FILTER_MAP[filter]}
             onCompleteTask={handleCompleteTask}
             onUpdateTask={handleUpdateTask}
+            onAddTask={handleAddTask}
             onDeleteTask={handleDeleteTask}
           />
         ))}
