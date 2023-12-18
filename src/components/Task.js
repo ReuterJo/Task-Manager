@@ -1,6 +1,6 @@
 import { React, useState } from 'react';
 
-export default function Task({task, onUpdate, onDelete}) {
+export default function Task({task, parentId, onUpdate, onDelete}) {
     const [isEditing, setIsEditing] = useState(false);
     let taskContent;
     if (isEditing) {
@@ -9,7 +9,7 @@ export default function Task({task, onUpdate, onDelete}) {
                 <input
                     value={task.text}
                     onChange={(e) => {
-                        onUpdate({
+                        onUpdate(task.id, {
                             ...task,
                             text: e.target.value,
                         });
@@ -39,7 +39,7 @@ export default function Task({task, onUpdate, onDelete}) {
                 }}
             />
             {taskContent}
-            <button onClick={() => onDelete(task.id)}>Delete</button>
+            <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
         </label>
     );
 }

@@ -8,31 +8,46 @@ export default function App() {
   const root = tasks[0];
   const taskIds = root.childIds;
 
+  // Adds a task at the top level
   function handleAddTask(text) {
-    setTasks([
+    const newId = nextId++;
+    const newTask = {
+      id: newId,
+      text: text,
+      done: false,
+      childIds: [],
+    };
+    const newRoot = {
+      ...root,
+      childIds: root.childIds.push(newId)
+    }
+    setTasks({
+      newRoot,
       ...tasks,
-      {
-        id: nextId++,
-        text: text,
-        done: false,
-      },
-    ]);
+      [newId]: newTask
+    });
+
+  }
+      
+  // Updates a task
+  function handleUpdateTask(taskId, task) {
+    setTasks({
+      ...tasks,
+      [taskId]: task
+    });
   }
 
-  function handleUpdateTask(task) {
-    setTasks(
-      tasks.map((t) => {
-        if (t.id === task.id) {
-          return task;
-        } else {
-          return t;
-        }
-      })
-    );
-  }
-
-  function handleDeleteTask(taskId) {
-    setTasks(tasks.filter((t) => t.id !== taskId));
+  // Removes task from displayed tree, but not from the data model
+  function handleDeleteTask(taskId, parentId) {
+    const parent = tasks[parentId];
+    const newParent = {
+      ...parent,
+      childIds: parent.childIds.filter(id => id !== taskId)
+    };
+    setTasks({
+      ...tasks,
+      [parentId]: newParent
+    });
   }
 
   return (

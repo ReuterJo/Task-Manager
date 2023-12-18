@@ -8,6 +8,7 @@ export default function TaskTree({id, parentId, tasksById, onUpdateTask, onDelet
         <li>
             <Task 
                 task={task}
+                parentId = {parentId}
                 onUpdate={onUpdateTask}
                 onDelete={onDeleteTask}
             />
