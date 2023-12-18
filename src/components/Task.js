@@ -1,27 +1,34 @@
-import { React, useState } from 'react';
+import React from 'react';
 
-export default function Task({task, parentId, onComplete, onUpdate, onAdd, onDelete}) {
-    const [taskState, setTaskState] = useState('Displaying');
+export default function Task({task, parentId, taskState, onUpdateTask, onComplete, onDelete, onUpdateText, onUpdateShow}) {
 
     let taskContent;
-    let subtaskContent = (
-        <>
-        </>
-    );
     switch (taskState) {
         case 'Editing':
             taskContent = (
                 <>
-                    <input
-                        value={task.text}
-                        onChange={(e) => {
-                            onUpdate(task.id, {
-                                ...task,
-                                text: e.target.value,
-                            });
-                        }}  
-                    />
-                    <button onClick={() => setTaskState('Displaying')}>Save</button>
+                    {task.text}
+                    <button
+                        disabled 
+                        onClick={() => {
+                            onUpdateTask('Editing');
+                            onUpdateText(task.text);
+                            onUpdateShow(true);
+                        }}
+                    >
+                        Edit
+                    </button>
+                    <button disabled onClick={() => onDelete(task.id, parentId)}>Delete</button>
+                    <button
+                        disabled 
+                        onClick={() => {
+                            onUpdateTask('Adding');
+                            onUpdateText('');
+                            onUpdateShow(true);
+                        }}
+                    >
+                        Add Subtask
+                    </button>
                 </>
             );
             break;
@@ -29,13 +36,27 @@ export default function Task({task, parentId, onComplete, onUpdate, onAdd, onDel
             taskContent = (
                 <>
                     {task.text}
-                </>
-            );
-            subtaskContent = (
-                <>
-                    <ul>
-                        <li>{task.text}</li>
-                    </ul>
+                    <button
+                        disabled 
+                        onClick={() => {
+                            onUpdateTask('Editing');
+                            onUpdateText(task.text);
+                            onUpdateShow(true);
+                        }}
+                    >
+                        Edit
+                    </button>
+                    <button disabled onClick={() => onDelete(task.id, parentId)}>Delete</button>
+                    <button
+                        disabled 
+                        onClick={() => {
+                            onUpdateTask('Adding');
+                            onUpdateText('');
+                            onUpdateShow(true);
+                        }}
+                    >
+                        Add Subtask
+                    </button>
                 </>
             );
             break;
@@ -43,30 +64,41 @@ export default function Task({task, parentId, onComplete, onUpdate, onAdd, onDel
             taskContent = (
                 <>
                     {task.text}
-                    <button onClick={() => setTaskState('Editing')}>Edit</button>
+                    <button 
+                        onClick={() => {
+                            onUpdateTask('Editing');
+                            onUpdateText(task.text);
+                            onUpdateShow(true);
+                        }}
+                    >
+                        Edit
+                    </button>
+                    <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
+                    <button 
+                        onClick={() => {
+                            onUpdateTask('Adding');
+                            onUpdateText('');
+                            onUpdateShow(true);
+                        }}
+                    >
+                        Add Subtask
+                    </button>
                 </>
             );
     }
     return (
-        <>
-            <label>
-                <input 
-                    type="checkbox"
-                    checked={task.done}
-                    onChange={(e) => {
-                        onComplete(task.id, {
-                            ...task,
-                            done: e.target.checked,
-                        });
-                    }}
-                />
-                {taskContent}
-                <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
-                <button onClick={() => {setTaskState('Adding');}}>Add Subtask</button>
-            </label>
-            <label>
-                {subtaskContent}
-            </label>
-        </>
+        <label>
+            <input 
+                type="checkbox"
+                checked={task.done}
+                onChange={(e) => {
+                    onComplete(task.id, {
+                        ...task,
+                        done: e.target.checked,
+                    });
+                }}
+            />
+            {taskContent}
+        </label>
     );
 }

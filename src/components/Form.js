@@ -1,28 +1,27 @@
-import { React, useState } from 'react';
+import React from 'react';
 
-export default function Form({onAddTask}) {
-    const [text, setText] = useState('');
-    const [showForm, setShowForm] = useState(false);
-
-    if (showForm) {
+export default function Form({formText, formShow, onUpdateTaskState, onUpdateFormText, onUpdateFormShow, onAddTask}) {
+    if (formShow) {
         return (
             <>
                 <input
                     placeholder="Add task"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    value={formText}
+                    onChange={(e) => onUpdateFormText(e.target.value)}
                 />
                 <button
                     onClick={() => {
-                        setText('');
-                        setShowForm(false);
-                        onAddTask(text);
+                        onUpdateFormText('');
+                        onUpdateFormShow(false);
+                        onAddTask(formText);
+                        onUpdateTaskState('Displaying');
                     }}>
                     Add
                 </button>
                 <button onClick={() => {
-                        setText('');
-                        setShowForm(false);
+                        onUpdateFormText('');
+                        onUpdateFormShow(false);
+                        onUpdateTaskState('Displaying');
                     }}>
                     Cancel
                 </button>
@@ -31,7 +30,7 @@ export default function Form({onAddTask}) {
     }
     else {
         return (
-            <button onClick={() => setShowForm(true)}>
+            <button onClick={() => onUpdateFormShow(true)}>
                 Add
             </button>
         );

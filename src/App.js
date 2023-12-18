@@ -13,6 +13,10 @@ const FILTER_NAMES = Object.keys(FILTER_MAP);
 export default function App() {
   const [tasks, setTasks] = useState(initialTasks);
   const [filter, setFilter] = useState("All");
+  const [formText, setFormText] = useState('');
+  const [formShow, setFormShow] = useState(false);
+  const [taskState, setTaskState] = useState('Displaying');
+
   const root = tasks[0];
   const taskIds = root.childIds;
 
@@ -24,6 +28,18 @@ export default function App() {
       setFilter={setFilter}
     />
   ));
+
+  function handleFormText(text) {
+    setFormText(text);
+  }
+
+  function handleFormShow(bool) {
+    setFormShow(bool);
+  }
+
+  function handleTaskState(state) {
+    setTaskState(state);
+  }
 
   // Adds a task at the top level, make this more generalizable with parentId given as a parameter
   function handleAddTask(text) {
@@ -105,16 +121,25 @@ export default function App() {
             key={id}
             id={id}
             parentId={0}
+            taskState={taskState}
+            onUpdateTaskState={handleTaskState}
             tasksById={tasks}
             filter={FILTER_MAP[filter]}
             onCompleteTask={handleCompleteTask}
-            onUpdateTask={handleUpdateTask}
-            onAddTask={handleAddTask}
             onDeleteTask={handleDeleteTask}
+            onUpdateFormText={handleFormText}
+            onUpdateFormShow={handleFormShow}
           />
         ))}
       </ul>
-      <Form onAddTask={handleAddTask} />
+      <Form
+        formText={formText}
+        formShow={formShow}
+        onUpdateTaskState={handleTaskState}
+        onUpdateFormText={handleFormText}
+        onUpdateFormShow={handleFormShow}
+        onAddTask={handleAddTask}
+      />
     </>
   );
 }

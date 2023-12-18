@@ -1,7 +1,7 @@
 import React from 'react';
 import Task from './Task'
 
-export default function TaskTree({id, parentId, tasksById, filter, onCompleteTask, onUpdateTask, onAddTask, onDeleteTask}) {
+export default function TaskTree({id, parentId, taskState, onUpdateTaskState, tasksById, filter, onCompleteTask, onDeleteTask, onUpdateFormText, onUpdateFormShow}) {
     const task = tasksById[id];
     const childIds = task.childIds;
     if (filter(task)) {
@@ -9,11 +9,13 @@ export default function TaskTree({id, parentId, tasksById, filter, onCompleteTas
             <li>
                 <Task 
                     task={task}
-                    parentId = {parentId}
+                    parentId={parentId}
+                    taskState={taskState}
+                    onUpdateTask={onUpdateTaskState}
                     onComplete={onCompleteTask}
-                    onUpdate={onUpdateTask}
-                    onAdd={onAddTask}
                     onDelete={onDeleteTask}
+                    onUpdateText={onUpdateFormText}
+                    onUpdateShow={onUpdateFormShow}
                 />
                 {childIds.length > 0 && 
                     <ul>
@@ -22,12 +24,14 @@ export default function TaskTree({id, parentId, tasksById, filter, onCompleteTas
                                 key={childId}
                                 id={childId}
                                 parentId={id}
+                                taskState={taskState}
+                                onUpdateTaskState={onUpdateTaskState}
                                 tasksById={tasksById}
                                 filter={filter}
                                 onCompleteTask={onCompleteTask}
-                                onUpdateTask={onUpdateTask}
-                                onAddTask={onAddTask}
                                 onDeleteTask={onDeleteTask}
+                                onUpdateFormText={onUpdateFormText}
+                                onUpdateFormShow={onUpdateFormShow}
                             />
                         ))}
                     </ul>
