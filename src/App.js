@@ -4,58 +4,43 @@ import TaskTree from './components/TaskTree';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton'
 
+// Static task data for testing purposes
+let nextId = 6;
+const initialTasks = {
+  0: {id: 0, text: '(Root)', done: true, collapsed: false, childIds: [1, 2], childCollapsed: false},
+  1: {id: 1, text: 'Hello world', done: true, collapsed: false, childIds: [], childCollapsed: false},
+  2: {id: 2, text: 'Goodnight moon', done: false, collapsed: false, childIds: [3, 4], childCollapsed: false},
+  3: {id: 3, text: 'Little bunny foo-foo', done: false, collapsed: false, childIds: [5], childCollapsed: false},
+  4: {id: 4, text: 'Making it happen', done: false, collapsed: false, childIds: [], childCollapsed: false},
+  5: {id: 5, text: 'One day at a time', done: false, collapsed: false, childIds: [], childCollapsed: false},
+};
+
+// Task filter definitions
 const FILTER_MAP = {
   All: () => true,
   Active: (task) => !task.done,
+  Completed: (task) => task.done,
 }
 const FILTER_NAMES = Object.keys(FILTER_MAP);
 
 export default function App() {
+  // Define states
   const [tasks, setTasks] = useState(initialTasks);
   const [filter, setFilter] = useState("All");
   const [formText, setFormText] = useState('');
   const [formState, setFormState] = useState('Hidden');
-  const [taskState, setTaskState] = useState('Displaying');
+  const [tasksLock, setTasksLock] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState(null);
 
+  // Define root and identify children tasks
   const root = tasks[0];
   const taskIds = root.childIds;
 
-  const filterList = FILTER_NAMES.map((name) => (
-    <FilterButton
-      key={name}
-      name={name}
-      isPressed={name === filter}
-      setFilter={setFilter}
-    />
-  ));
-
-  function handleFormText(text) {
-    setFormText(text);
-  }
-
-  function handleFormState(state) {
-    setFormState(state);
-  }
-
-  function handleTaskState(state) {
-    setTaskState(state);
-  }
-
-  function handleActiveTaskId(id) {
-    setActiveTaskId(id);
-  }
-
-  // Adds a task at the top level, make this more generalizable with parentId given as a parameter, should be possible
+  // Add a new task and update the parent task
   function handleAddTask(parentId, text) {
     const newId = nextId++;
     const parent = tasks[parentId];
-    const newTask = {
-      id: newId,
-      text: text,
-      done: false,
-      childIds: [],
-    };
+
     parent.childIds.push(newId)
     const newParent = {
       ...parent,
@@ -64,21 +49,30 @@ export default function App() {
       ...tasks,
       [parentId]: newParent,
     }));
+
+    const newTask = {
+      id: newId,
+      text: text,
+      done: false,
+      collapsed: false,
+      childIds: [],
+      childCollapsed: false,
+    };
     setTasks((tasks) => ({
       ...tasks,
       [newId]: newTask,
     }));
   }
   
-  // Update task
+  // Update task upon edit
   function handleUpdateTask(taskId, task) {
-    setTasks({
+    setTasks((tasks) => ({
       ...tasks,
       [taskId]: task
-    });
+    }));
   }
 
-  // Updates a task, I need to update setTasks a single time, so I need to bundle the changes
+  // Complete task and all children tasks
   function handleCompleteTask(taskId, task) {
     setTasks((tasks) => ({
       ...tasks,
@@ -92,7 +86,7 @@ export default function App() {
     }
   }
 
-  // Helper function that updates child tasks
+  // Helper function that helps complete child tasks
   function handleCompleteTaskHelper(taskId, task) {
     setTasks((tasks) => ({
       ...tasks,
@@ -106,7 +100,29 @@ export default function App() {
     }
   }
 
-  // Removes task from displayed tree, but not from the data model
+  // Collapse children tasks and updates parent task
+  function handleCollapseTask(taskId, task) {
+    setTasks((tasks) => ({
+      ...tasks,
+      [taskId]: task
+    }));
+    if (task.childIds.length > 0) {
+      if (task.childCollapsed) {
+        task.childIds.map((childId) => handleUpdateTask(childId, 
+          {...tasks[childId],
+            collapsed: true,
+          }));
+      }
+      else {
+        task.childIds.map((childId) => handleUpdateTask(childId, 
+          {...tasks[childId],
+            collapsed: false,
+          }));
+      }
+    }
+  }
+
+  // Delete reference from parent tasks
   function handleDeleteTask(taskId, parentId) {
     const parent = tasks[parentId];
     const newParent = {
@@ -119,9 +135,19 @@ export default function App() {
     });
   }
 
+  // Define filter button list
+  const filterList = FILTER_NAMES.map((name) => (
+    <FilterButton
+      key={name}
+      name={name}
+      setFilter={setFilter}
+    />
+  ));
+
+  // Define header, filter buttons, tasks tree, and form
   return (
     <>
-      <h2>Your Tasks</h2>
+      <h2>Task Manager - {filter}</h2>
       {filterList}
       <ul>
         {taskIds.map((id) => (
@@ -129,40 +155,30 @@ export default function App() {
             key={id}
             id={id}
             parentId={0}
-            taskState={taskState}
-            onUpdateTaskState={handleTaskState}
-            onUpdateActiveTaskId={handleActiveTaskId}
             tasksById={tasks}
             filter={FILTER_MAP[filter]}
+            tasksLock={tasksLock}
+            onUpdateTasksLock={setTasksLock}
+            onUpdateActiveTaskId={setActiveTaskId}
             onCompleteTask={handleCompleteTask}
+            onCollapseTask={handleCollapseTask}
             onDeleteTask={handleDeleteTask}
-            onUpdateFormText={handleFormText}
-            onUpdateFormState={handleFormState}
+            onUpdateFormText={setFormText}
+            onUpdateFormState={setFormState}
           />))}
       </ul>
       <Form
-        activeTaskId={activeTaskId}
-        onUpdateActiveTaskId={handleActiveTaskId}
         tasksById={tasks}
+        activeTaskId={activeTaskId}
         formText={formText}
         formState={formState}
-        onUpdateTaskState={handleTaskState}
-        onUpdateFormText={handleFormText}
-        onUpdateFormState={handleFormState}
+        onUpdateFormText={setFormText}
+        onUpdateFormState={setFormState}
+        onUpdateActiveTaskId={setActiveTaskId}
+        onUpdateTasksLock={setTasksLock}
         onAddTask={handleAddTask}
         onUpdateTask={handleUpdateTask}
       />
     </>
   );
 }
-
-// Static data for testing purposes
-let nextId = 6;
-const initialTasks = {
-  0: {id: 0, text: '(Root)', done: true, childIds: [1, 2]},
-  1: {id: 1, text: 'Hello world', done: true, childIds: []},
-  2: {id: 2, text: 'Goodnight moon', done: false, childIds: [3, 4]},
-  3: {id: 3, text: 'Little bunny foo-foo', done: false, childIds: [5]},
-  4: {id: 4, text: 'Making it happen', done: false, childIds: []},
-  5: {id: 5, text: 'One day at a time', done: false, childIds: []},
-};

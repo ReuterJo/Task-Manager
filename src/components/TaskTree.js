@@ -1,22 +1,25 @@
 import React from 'react';
 import Task from './Task'
 
-export default function TaskTree({id, parentId, taskState, onUpdateTaskState, onUpdateActiveTaskId, tasksById, filter, onCompleteTask, onDeleteTask, onUpdateFormText, onUpdateFormState}) {
+export default function TaskTree({id, parentId, tasksById, filter, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onCompleteTask, onCollapseTask, onDeleteTask, onUpdateFormText, onUpdateFormState}) {    
     const task = tasksById[id];
     const childIds = task.childIds;
-    if (filter(task)) {
+
+    // Show task if selected for by filter and not collapsed, and display children
+    if (filter(task) && !task.collapsed) {
         return (
             <li>
                 <Task 
                     task={task}
                     parentId={parentId}
-                    taskState={taskState}
-                    onUpdateTask={onUpdateTaskState}
+                    tasksLock={tasksLock}
+                    onUpdateTasksLock={onUpdateTasksLock}
                     onUpdateActiveTaskId={onUpdateActiveTaskId}
                     onComplete={onCompleteTask}
+                    onCollapse={onCollapseTask}
                     onDelete={onDeleteTask}
-                    onUpdateText={onUpdateFormText}
-                    onUpdateState={onUpdateFormState}
+                    onUpdateFormText={onUpdateFormText}
+                    onUpdateFormState={onUpdateFormState}
                 />
                 {childIds.length > 0 && 
                     <ul>
@@ -25,12 +28,13 @@ export default function TaskTree({id, parentId, taskState, onUpdateTaskState, on
                                 key={childId}
                                 id={childId}
                                 parentId={id}
-                                taskState={taskState}
-                                onUpdateTaskState={onUpdateTaskState}
-                                onUpdateActiveTaskId={onUpdateActiveTaskId}
                                 tasksById={tasksById}
                                 filter={filter}
+                                tasksLock={tasksLock}
+                                onUpdateTasksLock={onUpdateTasksLock}
+                                onUpdateActiveTaskId={onUpdateActiveTaskId}
                                 onCompleteTask={onCompleteTask}
+                                onCollapseTask={onCollapseTask}
                                 onDeleteTask={onDeleteTask}
                                 onUpdateFormText={onUpdateFormText}
                                 onUpdateFormState={onUpdateFormState}

@@ -1,11 +1,11 @@
 import React from 'react';
 
-export default function FilterButton(props) {
+export default function FilterButton({name, setFilter}) {
     return (
         <button
             type="button"
-            onClick={() => props.setFilter(props.name)}>
-            {props.name}
+            onClick={() => setFilter(name)}>
+            {name}
         </button>
     );
 }

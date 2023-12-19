@@ -1,55 +1,85 @@
 import React from 'react';
 
-export default function Task({task, parentId, taskState, onUpdateTask, onUpdateActiveTaskId, onComplete, onDelete, onUpdateText, onUpdateState}) {
+export default function Task({task, parentId, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onComplete, onCollapse, onDelete, onUpdateFormText, onUpdateFormState}) {
+    let taskOptions;
+    let showSubtasks;
 
-    let taskContent;
-    switch (taskState) {
-        case 'Editing':
-            taskContent = (
-                <>
-                    {task.text}
-                    <button disabled>Edit</button>
-                    <button disabled>Delete</button>
-                    <button disabled>Add Subtask</button>
-                </>
-            );
-            break;
-        case 'Adding':
-            taskContent = (
-                <>
-                    {task.text}
-                    <button disabled>Edit</button>
-                    <button disabled>Delete</button>
-                    <button disabled>Add Subtask</button>
-                </>
-            );
-            break;
-        default:
-            taskContent = (
-                <>
-                    {task.text}
-                    <button 
-                        onClick={() => {
-                            onUpdateTask('Editing');
-                            onUpdateText(task.text);
-                            onUpdateActiveTaskId(task.id);
-                            onUpdateState('Edit Task');
-                    }}>
-                        Edit
-                    </button>
-                    <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
-                    <button 
-                        onClick={() => {
-                            onUpdateTask('Adding');
-                            onUpdateText('');
-                            onUpdateActiveTaskId(task.id);
-                            onUpdateState('Add Subtask');
-                    }}>
-                        Add Subtask
-                    </button>
-                </>
-            );
+    // Show tasks options enabled if tasks are not locked
+    taskOptions = (
+        <>
+            <button 
+                onClick={() => {
+                    onUpdateTasksLock(true);
+                    onUpdateFormText(task.text);
+                    onUpdateActiveTaskId(task.id);
+                    onUpdateFormState('Edit Task');
+            }}>
+                Edit
+            </button>
+            <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
+            <button 
+                onClick={() => {
+                    onUpdateTasksLock(true);
+                    onUpdateFormText('');
+                    onUpdateActiveTaskId(task.id);
+                    onUpdateFormState('Add Subtask');
+            }}>
+                Add Subtask
+            </button>
+        </>
+    );
+
+    if (task.childIds.length > 0 && task.childCollapsed) {
+        showSubtasks = (
+            <button
+                onClick={() => {
+                    onCollapse(task.id, {
+                        ...task,
+                        childCollapsed: false,
+                    });
+                }}>
+                Show subtasks
+            </button>
+        );
     }
+    
+    if (task.childIds.length > 0 && !task.childCollapsed) {
+        showSubtasks = (
+            <button
+                onClick={() => {
+                    onCollapse(task.id, {
+                        ...task,
+                        childCollapsed: true,
+                    });
+                }}>
+                Hide subtasks
+            </button>
+        );
+    }
+    
+    // Otherwise show task options disabled
+    if (tasksLock) {
+        taskOptions = (
+            <>
+                <button disabled>Edit</button>
+                <button disabled>Delete</button>
+                <button disabled>Add Subtask</button>
+            </>
+        );
+
+        if (task.childIds.length > 0 && task.childCollapsed) {
+            showSubtasks = (
+                <button disabled>Show subtasks</button>
+            );
+        }
+
+        if (task.childIds.length > 0 && !task.childCollapsed) {
+            showSubtasks = (
+                <button disabled>Hide subtasks</button>
+            );
+        }
+    }
+
     return (
         <label>
             <input 
@@ -62,7 +92,9 @@ export default function Task({task, parentId, taskState, onUpdateTask, onUpdateA
                     });
                 }}
             />
-            {taskContent}
+            {task.text}
+            {taskOptions}
+            {showSubtasks}
         </label>
     );
 }

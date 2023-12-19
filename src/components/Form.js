@@ -1,9 +1,10 @@
 import React from 'react';
 
-export default function Form({activeTaskId, onUpdateActiveTaskId, tasksById, formText, formState, onUpdateTaskState, onUpdateFormText, onUpdateFormState, onAddTask, onUpdateTask}) {
-    
+export default function Form({tasksById, activeTaskId, formText, formState, onUpdateFormText, onUpdateFormState, onUpdateActiveTaskId, onUpdateTasksLock, onAddTask, onUpdateTask}) {
     const activeTask = tasksById[activeTaskId];
     let formContent;
+
+    // Display form according to state
     switch (formState) {
         case 'Add Task':
             formContent = (
@@ -18,14 +19,14 @@ export default function Form({activeTaskId, onUpdateActiveTaskId, tasksById, for
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
                             onAddTask(0, formText);
-                            onUpdateTaskState('Displaying');
+                            onUpdateTasksLock(false);
                         }}>
                         Add
                     </button>
                     <button onClick={() => {
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
-                            onUpdateTaskState('Displaying');
+                            onUpdateTasksLock(false);
                         }}>
                         Cancel
                     </button>
@@ -49,14 +50,14 @@ export default function Form({activeTaskId, onUpdateActiveTaskId, tasksById, for
                                 text: formText,
                             });
                             onUpdateActiveTaskId(null);
-                            onUpdateTaskState('Displaying');
+                            onUpdateTasksLock(false);
                         }}>
                         Save
                     </button>
                     <button onClick={() => {
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
-                            onUpdateTaskState('Displaying');
+                            onUpdateTasksLock(false);
                         }}>
                         Cancel
                     </button>
@@ -76,14 +77,14 @@ export default function Form({activeTaskId, onUpdateActiveTaskId, tasksById, for
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
                             onAddTask(activeTaskId, formText);
-                            onUpdateTaskState('Displaying');
+                            onUpdateTasksLock(false);
                         }}>
                         Add
                     </button>
                     <button onClick={() => {
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
-                            onUpdateTaskState('Displaying');
+                            onUpdateTasksLock(false);
                         }}>
                         Cancel
                     </button>
