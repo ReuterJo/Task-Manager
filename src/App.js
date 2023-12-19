@@ -46,25 +46,28 @@ export default function App() {
     setActiveTaskId(id);
   }
 
-  // Adds a task at the top level, make this more generalizable with parentId given as a parameter
-  function handleAddTask(text) {
+  // Adds a task at the top level, make this more generalizable with parentId given as a parameter, should be possible
+  function handleAddTask(parentId, text) {
     const newId = nextId++;
+    const parent = tasks[parentId];
     const newTask = {
       id: newId,
       text: text,
       done: false,
       childIds: [],
     };
-    const newRoot = {
-      ...root,
-      childIds: root.childIds.push(newId)
+    parent.childIds.push(newId)
+    const newParent = {
+      ...parent,
     }
-    setTasks({
-      newRoot,
+    setTasks((tasks) => ({
       ...tasks,
-      [newId]: newTask
-    });
-
+      [parentId]: newParent,
+    }));
+    setTasks((tasks) => ({
+      ...tasks,
+      [newId]: newTask,
+    }));
   }
   
   // Update task
@@ -135,8 +138,7 @@ export default function App() {
             onDeleteTask={handleDeleteTask}
             onUpdateFormText={handleFormText}
             onUpdateFormState={handleFormState}
-          />
-        ))}
+          />))}
       </ul>
       <Form
         activeTaskId={activeTaskId}

@@ -17,7 +17,7 @@ export default function Form({activeTaskId, onUpdateActiveTaskId, tasksById, for
                         onClick={() => {
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
-                            onAddTask(formText);
+                            onAddTask(0, formText);
                             onUpdateTaskState('Displaying');
                         }}>
                         Add
@@ -75,7 +75,7 @@ export default function Form({activeTaskId, onUpdateActiveTaskId, tasksById, for
                         onClick={() => {
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
-                            onAddTask(formText);
+                            onAddTask(activeTaskId, formText);
                             onUpdateTaskState('Displaying');
                         }}>
                         Add

@@ -34,8 +34,7 @@ export default function Task({task, parentId, taskState, onUpdateTask, onUpdateA
                             onUpdateText(task.text);
                             onUpdateActiveTaskId(task.id);
                             onUpdateState('Edit Task');
-                        }}
-                    >
+                    }}>
                         Edit
                     </button>
                     <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
@@ -43,9 +42,9 @@ export default function Task({task, parentId, taskState, onUpdateTask, onUpdateA
                         onClick={() => {
                             onUpdateTask('Adding');
                             onUpdateText('');
+                            onUpdateActiveTaskId(task.id);
                             onUpdateState('Add Subtask');
-                        }}
-                    >
+                    }}>
                         Add Subtask
                     </button>
                 </>
