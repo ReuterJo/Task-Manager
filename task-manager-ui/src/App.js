@@ -7,7 +7,7 @@ import FilterButton from './components/FilterButton'
 // Static task data for testing purposes
 let nextId = 6;
 const initialTasks = {
-  0: {id: 0, text: '(Root)', done: true, collapsed: false, childIds: [1, 2], childCollapsed: false},
+  0: {id: 0, text: '(Root)', done: false, collapsed: false, childIds: [1, 2], childCollapsed: false},
   1: {id: 1, text: 'Hello world', done: true, collapsed: false, childIds: [], childCollapsed: false},
   2: {id: 2, text: 'Goodnight moon', done: false, collapsed: false, childIds: [3, 4], childCollapsed: false},
   3: {id: 3, text: 'Little bunny foo-foo', done: false, collapsed: false, childIds: [5], childCollapsed: false},

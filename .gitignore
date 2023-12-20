@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+task-manager-api/node_modules
+task-manager-ui/node_modules
 /.pnp
 .pnp.js
 
@@ -13,6 +14,7 @@
 
 # misc
 .DS_Store
+task-manager-api/.env
 .env.local
 .env.development.local
 .env.test.local
