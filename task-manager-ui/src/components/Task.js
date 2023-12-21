@@ -1,4 +1,11 @@
 import React from 'react';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import Checkbox from '@mui/material/Checkbox';
 
 export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onComplete, onCollapse, onDelete, onUpdateFormText, onUpdateFormState}) {
     let taskOptions;
@@ -7,53 +14,55 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
     // Show tasks options enabled if tasks are not locked
     taskOptions = (
         <>
-            <button 
+            <IconButton 
                 onClick={() => {
                     onUpdateTasksLock(true);
                     onUpdateFormText(task.text);
                     onUpdateActiveTaskId(taskId);
                     onUpdateFormState('Edit Task');
             }}>
-                Edit
-            </button>
-            <button onClick={() => onDelete(taskId, parentId)}>Delete</button>
-            <button 
+                <EditIcon />
+            </IconButton>
+            <IconButton 
                 onClick={() => {
                     onUpdateTasksLock(true);
                     onUpdateFormText('');
                     onUpdateActiveTaskId(taskId);
                     onUpdateFormState('Add Subtask');
             }}>
-                Add Subtask
-            </button>
+                <AddIcon />
+            </IconButton>
+            <IconButton onClick={() => onDelete(taskId, parentId)}>
+                <DeleteIcon />
+            </IconButton>            
         </>
     );
 
     if (task.childIds.length > 0 && task.childCollapsed) {
         showSubtasks = (
-            <button
+            <IconButton
                 onClick={() => {
                     onCollapse(taskId, {
                         ...task,
                         childCollapsed: false,
                     });
                 }}>
-                Show subtasks
-            </button>
+                <ArrowDropDownIcon />
+            </IconButton>
         );
     }
     
     if (task.childIds.length > 0 && !task.childCollapsed) {
         showSubtasks = (
-            <button
+            <IconButton
                 onClick={() => {
                     onCollapse(taskId, {
                         ...task,
                         childCollapsed: true,
                     });
                 }}>
-                Hide subtasks
-            </button>
+                <ArrowDropUpIcon />
+            </IconButton>
         );
     }
     
@@ -61,28 +70,38 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
     if (tasksLock) {
         taskOptions = (
             <>
-                <button disabled>Edit</button>
-                <button disabled>Delete</button>
-                <button disabled>Add Subtask</button>
+                <IconButton disabled>
+                    <EditIcon />
+                </IconButton>
+                <IconButton disabled>
+                    <AddIcon />
+                </IconButton>
+                <IconButton disabled>
+                    <DeleteIcon />
+                </IconButton>
             </>
         );
 
         if (task.childIds.length > 0 && task.childCollapsed) {
             showSubtasks = (
-                <button disabled>Show subtasks</button>
+                <IconButton disabled>
+                    <ArrowDropDownIcon />
+                </IconButton>
             );
         }
 
         if (task.childIds.length > 0 && !task.childCollapsed) {
             showSubtasks = (
-                <button disabled>Hide subtasks</button>
+                <IconButton disabled>
+                    <ArrowDropUpIcon />
+                </IconButton>
             );
         }
     }
 
     return (
         <label>
-            <input 
+            <Checkbox 
                 type="checkbox"
                 checked={task.done}
                 onChange={(e) => {

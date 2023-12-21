@@ -1,9 +1,12 @@
-import './App.css';
+// import './App.css';
 import { React, useState, useEffect } from 'react';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton'
 import { loadTasks, addTask, updateTask, deleteTask } from './routing/routes';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
 
 // Task filter definitions
 const FILTER_MAP = {
@@ -146,6 +149,7 @@ export default function App() {
     <FilterButton
       key={name}
       name={name}
+      isPressed={name === filter}
       setFilter={setFilter}
     />
   ));
@@ -153,41 +157,46 @@ export default function App() {
   // Define header, filter buttons, tasks tree, and form
   return (
     <>
-      <h2>Task Manager - {filter}</h2>
-      {filterList}
-        {rootId !== null &&
-          <ul>
-            {tasks[rootId].childIds.map((id) => (
-              <TaskTree 
-                key={id}
-                id={id}
-                parentId={rootId}
-                tasksById={tasks}
-                filter={FILTER_MAP[filter]}
-                tasksLock={tasksLock}
-                onUpdateTasksLock={setTasksLock}
-                onUpdateActiveTaskId={setActiveTaskId}
-                onCompleteTask={handleCompleteTask}
-                onCollapseTask={handleCollapseTask}
-                onDeleteTask={handleDeleteTask}
-                onUpdateFormText={setFormText}
-                onUpdateFormState={setFormState}
-              />))}
-          </ul>
-        }
-      <Form
-        rootId={rootId}
-        tasksById={tasks}
-        activeTaskId={activeTaskId}
-        formText={formText}
-        formState={formState}
-        onUpdateFormText={setFormText}
-        onUpdateFormState={setFormState}
-        onUpdateActiveTaskId={setActiveTaskId}
-        onUpdateTasksLock={setTasksLock}
-        onAddTask={handleAddTask}
-        onUpdateTask={handleUpdateTask}
-      />
+      <CssBaseline />
+      <Container maxWidth="sm">
+        <h2>Task Manager</h2>
+        <ButtonGroup>
+          {filterList}
+        </ButtonGroup>
+          {rootId !== null &&
+            <ul>
+              {tasks[rootId].childIds.map((id) => (
+                <TaskTree 
+                  key={id}
+                  id={id}
+                  parentId={rootId}
+                  tasksById={tasks}
+                  filter={FILTER_MAP[filter]}
+                  tasksLock={tasksLock}
+                  onUpdateTasksLock={setTasksLock}
+                  onUpdateActiveTaskId={setActiveTaskId}
+                  onCompleteTask={handleCompleteTask}
+                  onCollapseTask={handleCollapseTask}
+                  onDeleteTask={handleDeleteTask}
+                  onUpdateFormText={setFormText}
+                  onUpdateFormState={setFormState}
+                />))}
+            </ul>
+          }
+        <Form
+          rootId={rootId}
+          tasksById={tasks}
+          activeTaskId={activeTaskId}
+          formText={formText}
+          formState={formState}
+          onUpdateFormText={setFormText}
+          onUpdateFormState={setFormState}
+          onUpdateActiveTaskId={setActiveTaskId}
+          onUpdateTasksLock={setTasksLock}
+          onAddTask={handleAddTask}
+          onUpdateTask={handleUpdateTask}
+        />
+      </Container>
     </>
   );
 }
