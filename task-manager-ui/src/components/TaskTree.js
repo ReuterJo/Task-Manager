@@ -8,7 +8,7 @@ export default function TaskTree({id, parentId, tasksById, filter, tasksLock, on
     // Show task if selected for by filter and not collapsed, and display children
     if (filter(task) && !task.collapsed) {
         return (
-            <li>
+            <li style={{listStyle: 'none'}}>
                 <Task 
                     task={task}
                     taskId={id}

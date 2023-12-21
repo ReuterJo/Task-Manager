@@ -1,4 +1,3 @@
-// import './App.css';
 import { React, useState, useEffect } from 'react';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
@@ -7,6 +6,8 @@ import { loadTasks, addTask, updateTask, deleteTask } from './routing/routes';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import TaskIcon from '@mui/icons-material/Task';
 
 // Task filter definitions
 const FILTER_MAP = {
@@ -158,44 +159,46 @@ export default function App() {
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="sm">
-        <h2>Task Manager</h2>
-        <ButtonGroup>
-          {filterList}
-        </ButtonGroup>
-          {rootId !== null &&
-            <ul>
-              {tasks[rootId].childIds.map((id) => (
-                <TaskTree 
-                  key={id}
-                  id={id}
-                  parentId={rootId}
-                  tasksById={tasks}
-                  filter={FILTER_MAP[filter]}
-                  tasksLock={tasksLock}
-                  onUpdateTasksLock={setTasksLock}
-                  onUpdateActiveTaskId={setActiveTaskId}
-                  onCompleteTask={handleCompleteTask}
-                  onCollapseTask={handleCollapseTask}
-                  onDeleteTask={handleDeleteTask}
-                  onUpdateFormText={setFormText}
-                  onUpdateFormState={setFormState}
-                />))}
-            </ul>
-          }
-        <Form
-          rootId={rootId}
-          tasksById={tasks}
-          activeTaskId={activeTaskId}
-          formText={formText}
-          formState={formState}
-          onUpdateFormText={setFormText}
-          onUpdateFormState={setFormState}
-          onUpdateActiveTaskId={setActiveTaskId}
-          onUpdateTasksLock={setTasksLock}
-          onAddTask={handleAddTask}
-          onUpdateTask={handleUpdateTask}
-        />
+      <Container maxWidth="md">
+        <Paper elevation={3} sx={{m: 5, p: 5}}>
+          <h2>Task Manager <TaskIcon /></h2>
+          <ButtonGroup>
+            {filterList}
+          </ButtonGroup>
+            {rootId !== null &&
+              <ul>
+                {tasks[rootId].childIds.map((id) => (
+                  <TaskTree 
+                    key={id}
+                    id={id}
+                    parentId={rootId}
+                    tasksById={tasks}
+                    filter={FILTER_MAP[filter]}
+                    tasksLock={tasksLock}
+                    onUpdateTasksLock={setTasksLock}
+                    onUpdateActiveTaskId={setActiveTaskId}
+                    onCompleteTask={handleCompleteTask}
+                    onCollapseTask={handleCollapseTask}
+                    onDeleteTask={handleDeleteTask}
+                    onUpdateFormText={setFormText}
+                    onUpdateFormState={setFormState}
+                  />))}
+              </ul>
+            }
+          <Form
+            rootId={rootId}
+            tasksById={tasks}
+            activeTaskId={activeTaskId}
+            formText={formText}
+            formState={formState}
+            onUpdateFormText={setFormText}
+            onUpdateFormState={setFormState}
+            onUpdateActiveTaskId={setActiveTaskId}
+            onUpdateTasksLock={setTasksLock}
+            onAddTask={handleAddTask}
+            onUpdateTask={handleUpdateTask}
+          />
+        </Paper>
       </Container>
     </>
   );
