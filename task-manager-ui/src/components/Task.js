@@ -107,7 +107,6 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
                 <Box sx={{ display: 'flex'}}>
                     <Box sx={{ flexGrow: 1}}>
                         <Checkbox 
-                            type="checkbox"
                             checked={task.done}
                             onChange={(e) => {
                                 onComplete(taskId, {

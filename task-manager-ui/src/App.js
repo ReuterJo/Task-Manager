@@ -1,4 +1,5 @@
 import { React, useState, useEffect } from 'react';
+import { userImmer } from 'use-immer';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton'
@@ -52,11 +53,8 @@ export default function App() {
     const newParent = {
       ...parent,
     }
-    updateTask(parentId, newParent);
-    setTasks((tasks) => ({
-      ...tasks,
-      [parentId]: newParent,
-    }));
+
+    handleUpdateTask(parentId, newParent);
   }
   
   // Update task upon edit
@@ -70,12 +68,8 @@ export default function App() {
 
   // Complete task and all children tasks
   function handleCompleteTask(taskId, task) {
-    updateTask(taskId, task);
-    setTasks((tasks) => ({
-      ...tasks,
-      [taskId]: task
-    }));
-
+    handleUpdateTask(taskId, task);
+    
     if (task.done && task.childIds.length > 0) {
       task.childIds.map((childId) => handleCompleteTaskHelper(childId, 
         {...tasks[childId],
@@ -86,11 +80,7 @@ export default function App() {
 
   // Helper function that helps complete child tasks
   function handleCompleteTaskHelper(taskId, task) {
-    updateTask(taskId, task);
-    setTasks((tasks) => ({
-      ...tasks,
-      [taskId]: task
-    }));
+    handleUpdateTask(taskId, task);
     
     if (task.childIds.length > 0) {
       task.childIds.map((childId) => handleCompleteTaskHelper(childId, 
@@ -102,11 +92,15 @@ export default function App() {
 
   // Collapse children tasks and updates parent task
   function handleCollapseTask(taskId, task) {
-    updateTask(taskId, task);
+    // handleUpdateTask(taskId, task);
+    // updateTask(taskId, task);
+    /*
     setTasks((tasks) => ({
       ...tasks,
       [taskId]: task
     }));
+    */
+
     
     if (task.childIds.length > 0) {
       if (task.childCollapsed) {
@@ -132,11 +126,7 @@ export default function App() {
       childIds: parent.childIds.filter(id => id !== taskId)
     };
     
-    updateTask(parentId, newParent);
-    setTasks((tasks) => ({
-      ...tasks,
-      [parentId]: newParent
-    }));
+    handleUpdateTask(parentId, newParent);
 
     deleteTask(taskId);
     setTasks((tasks) => {
