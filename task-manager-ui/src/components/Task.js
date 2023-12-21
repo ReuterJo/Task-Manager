@@ -6,6 +6,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 
 export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onComplete, onCollapse, onDelete, onUpdateFormText, onUpdateFormState}) {
     let taskOptions;
@@ -100,20 +102,28 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
     }
 
     return (
-        <label>
-            <Checkbox 
-                type="checkbox"
-                checked={task.done}
-                onChange={(e) => {
-                    onComplete(taskId, {
-                        ...task,
-                        done: e.target.checked,
-                    });
-                }}
-            />
-            {task.text}
-            {taskOptions}
-            {showSubtasks}
-        </label>
+        <Box sx={{ flexGrow: 1 }}>
+            <label>
+                <Grid container spacing={2}>
+                    <Grid item xs={8}>
+                        <Checkbox 
+                            type="checkbox"
+                            checked={task.done}
+                            onChange={(e) => {
+                                onComplete(taskId, {
+                                    ...task,
+                                    done: e.target.checked,
+                                });
+                            }}
+                        />
+                        {task.text}
+                    </Grid>
+                    <Grid item xs={4}>
+                        {taskOptions}
+                        {showSubtasks}
+                    </Grid>
+                </Grid>
+            </label>
+        </Box>
     );
 }
