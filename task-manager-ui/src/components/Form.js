@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Form({tasksById, activeTaskId, formText, formState, onUpdateFormText, onUpdateFormState, onUpdateActiveTaskId, onUpdateTasksLock, onAddTask, onUpdateTask}) {
+export default function Form({rootId, tasksById, activeTaskId, formText, formState, onUpdateFormText, onUpdateFormState, onUpdateActiveTaskId, onUpdateTasksLock, onAddTask, onUpdateTask}) {
     const activeTask = tasksById[activeTaskId];
     let formContent;
 
@@ -18,7 +18,7 @@ export default function Form({tasksById, activeTaskId, formText, formState, onUp
                         onClick={() => {
                             onUpdateFormText('');
                             onUpdateFormState('Hidden');
-                            onAddTask(0, formText);
+                            onAddTask(rootId, formText);
                             onUpdateTasksLock(false);
                         }}>
                         Add

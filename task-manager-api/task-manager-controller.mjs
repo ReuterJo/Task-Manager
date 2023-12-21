@@ -11,7 +11,6 @@ app.use(express.json());  // REST needs JSON MIME type.
 // CREATE controller ******************************************
 app.post ('/tasks', (req,res) => { 
     tasks.createTask(
-        req.body.id, 
         req.body.text, 
         req.body.done,
         req.body.collapsed,
@@ -64,7 +63,6 @@ app.get('/tasks/:_id', (req, res) => {
 app.put('/tasks/:_id', (req, res) => {
     tasks.updateTask(
         req.params._id, 
-        req.body.id, 
         req.body.text, 
         req.body.done,
         req.body.collapsed,

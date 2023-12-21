@@ -22,7 +22,6 @@ db.once("open", (err) => {
 
 // SCHEMA: Define the collection's schema.
 const taskSchema = mongoose.Schema({
-	id:                 { type: Number, required: true },
 	text:               { type: String, required: true },
     done:               { type: Boolean, required: true },
 	collapsed:          { type: Boolean, required: true },
@@ -36,9 +35,8 @@ const tasks = mongoose.model('Task', taskSchema);
 
 
 // CREATE model *****************************************
-const createTask = async (id, text, done, collapsed, childIds, childCollapsed) => {
+const createTask = async (text, done, collapsed, childIds, childCollapsed) => {
     const task = new tasks({
-        id: id, 
         text: text, 
         done: done, 
         collapsed: collapsed,
@@ -68,9 +66,8 @@ const deleteTaskById = async (_id) => {
 };
 
 // UPDATE model *****************************************************
-const updateTask = async (_id, id, text, done, collapsed, childIds, childCollapsed) => {
+const updateTask = async (_id, text, done, collapsed, childIds, childCollapsed) => {
     const result = await tasks.replaceOne({_id: _id }, {
-        id: id, 
         text: text, 
         done: done, 
         collapsed: collapsed,
@@ -79,7 +76,6 @@ const updateTask = async (_id, id, text, done, collapsed, childIds, childCollaps
     });
     return { 
         _id: _id, 
-        id: id, 
         text: text, 
         done: done, 
         collapsed: collapsed,

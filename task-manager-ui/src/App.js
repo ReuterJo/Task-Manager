@@ -1,19 +1,95 @@
 import './App.css';
-import { React, useState, useEffect } from 'react';
+import { React, useState } from 'react';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton'
 
-// Static task data for testing purposes
-let nextId = 1;
-const initialTasks = {
-  0: {id: 0, text: '(Root)', done: false, collapsed: false, childIds: [1, 2], childCollapsed: false},
-  1: {id: 1, text: 'Hello world', done: true, collapsed: false, childIds: [], childCollapsed: false},
-  2: {id: 2, text: 'Goodnight moon', done: false, collapsed: false, childIds: [3, 4], childCollapsed: false},
-  3: {id: 3, text: 'Little bunny foo-foo', done: false, collapsed: false, childIds: [5], childCollapsed: false},
-  4: {id: 4, text: 'Making it happen', done: false, collapsed: false, childIds: [], childCollapsed: false},
-  5: {id: 5, text: 'One day at a time', done: false, collapsed: false, childIds: [], childCollapsed: false},
-};
+// Load tasks from database, and create root if necessary
+const loadTasks = async () => {
+  const response = await fetch('/tasks')
+  const taskList = await response.json();
+  let taskObject = {};
+  let rootId = null;
+  if (taskList.length > 0) {
+    taskList.forEach((dbTask) => {taskObject[dbTask._id] = {
+      text: dbTask.text,
+      done: dbTask.done,
+      collapsed: dbTask.collapsed,
+      childIds: dbTask.childIds,
+      childCollapsed: dbTask.childCollapsed,
+    };
+    if (dbTask.text === '(Root)') {
+      rootId = dbTask._id;
+    }});
+    return { initialTasks: taskObject, rootId: rootId };
+  } else {
+    const root = {text: '(Root)', done: false, collapsed: false, childIds: [], childCollapsed: false};
+    rootId = await addTask(root)
+    taskObject[rootId] = root;
+    return { initialTasks: taskObject, rootId: rootId };
+  }
+}
+
+// Add task to the database
+const addTask = async (task) => {
+  const response = await fetch('/tasks', {
+    method: 'POST',
+    body: JSON.stringify({
+      text: task.text,
+      done: task.done,
+      collapsed: task.collapsed,
+      childIds: task.childIds,
+      childCollapsed: task.childCollapsed,
+    }),
+    headers: {'Content-Type': 'application/json',},
+  });
+
+  if (response.status === 201){
+    console.log('Add successful');
+    const resTask = await response.json();
+    return resTask._id;
+  } else {
+    const errMessage = await response.json();
+    console.log(errMessage);
+  }
+}
+
+// Update task in the database 
+const updateTask = async (taskId, task) => {
+  const response = await fetch(`/tasks/${taskId}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      _id: taskId,
+      text: task.text,
+      done: task.done,
+      collapsed: task.collapsed,
+      childIds: task.childIds,
+      childCollapsed: task.childCollapsed,          
+    }),
+    headers: {'Content-Type': 'application/json',},
+    });
+
+    if (response.status === 200) {
+      console.log('Update successful');
+    } else {
+      const errMessage = await response.json();
+      console.log(errMessage);
+    }
+}
+
+// Delete task in the database
+const deleteTask = async (taskId) => {
+  const response = await fetch(`/tasks/${taskId}`, { method: 'DELETE' });
+  
+  if (response.status === 204) {
+    console.log('Delete successful');
+  } else {
+    const errMessage = await response.json();
+    console.log(errMessage);
+  }
+}
+
+const { initialTasks, rootId } = await loadTasks();
 
 // Task filter definitions
 const FILTER_MAP = {
@@ -32,127 +108,49 @@ export default function App() {
   const [tasksLock, setTasksLock] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState(null);
 
-  const taskIds = tasks[0].childIds;
-
-  // Define root and identify children tasks
-  let rootId;
-
-  const initTasks = async () => {
-    if (await loadTasks() === 0){
-      const root = {id: 0, text: '(Root)', done: false, collapsed: false, childIds: [], childCollapsed: false};
-      rootId = addTask(root);
-    } else {
-      rootId = tasks[0];
-    }
-  }
-
-  // Load tasks from database using useEffect
-  const loadTasks = async () => {
-    const response = await fetch('/tasks')
-    const tasks = await response.json();
-    setTasks(tasks);
-  }
-
-  // Need dependency array, when should this refresh???
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  // Add task to the database
-  const addTask = async (task) => {
-    const response = await fetch('/tasks', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: task.id,
-        text: task.text,
-        done: task.done,
-        collapsed: task.collapsed,
-        childIds: task.childIds,
-        childCollapsed: task.childCollapsed,
-      }),
-      headers: {'Content-Type': 'application/json',},
-    });
-
-    if (response.status === 201){
-      console.log('Add successful');
-      const resTask = await response.json();
-      return resTask._id;
-    } else {
-      const errMessage = await response.json();
-      console.log(errMessage);
-    }
-  }
-
-  // Update task in the database 
-  const updateTask = async (task) => {
-    const response = await fetch(`/tasks/${task._id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        _id: task._id,
-        id: task.id,
-        text: task.text,
-        done: task.done,
-        collapsed: task.collapsed,
-        childIds: task.childIds,
-        childCollapsed: task.childCollapsed,          
-      }),
-      headers: {'Content-Type': 'application/json',},
-      });
-
-      if (response.status === 200) {
-        console.log('Update successful');
-      } else {
-        const errMessage = await response.json();
-        console.log(errMessage);
-      }
-  }
-
   // Add a new task and update the parent task
   async function handleAddTask(parentId, text) {
-    const newId = nextId++;
-
     const newTask = {
-      id: newId,
       text: text,
       done: false,
       collapsed: false,
       childIds: [],
       childCollapsed: false,
     };
+    const newTaskId = await addTask(newTask);
     setTasks((tasks) => ({
       ...tasks,
-      [newId]: newTask,
+      [newTaskId]: newTask,
     }));
-    const newTaskId = await addTask(newTask);
 
     const parent = tasks[parentId];
     parent.childIds.push(newTaskId)
     const newParent = {
       ...parent,
     }
+    updateTask(parentId, newParent);
     setTasks((tasks) => ({
       ...tasks,
       [parentId]: newParent,
     }));
-    updateTask(newParent);
   }
   
   // Update task upon edit
   function handleUpdateTask(taskId, task) {
+    updateTask(taskId, task);
     setTasks((tasks) => ({
       ...tasks,
       [taskId]: task
     }));
-    updateTask(task);
   }
 
   // Complete task and all children tasks
   function handleCompleteTask(taskId, task) {
+    updateTask(taskId, task);
     setTasks((tasks) => ({
       ...tasks,
       [taskId]: task
     }));
-    //updateTask(task);
 
     if (task.done && task.childIds.length > 0) {
       task.childIds.map((childId) => handleCompleteTaskHelper(childId, 
@@ -164,12 +162,12 @@ export default function App() {
 
   // Helper function that helps complete child tasks
   function handleCompleteTaskHelper(taskId, task) {
+    updateTask(taskId, task);
     setTasks((tasks) => ({
       ...tasks,
       [taskId]: task
     }));
-    //updateTask(task);
-
+    
     if (task.childIds.length > 0) {
       task.childIds.map((childId) => handleCompleteTaskHelper(childId, 
         {...tasks[childId],
@@ -180,12 +178,12 @@ export default function App() {
 
   // Collapse children tasks and updates parent task
   function handleCollapseTask(taskId, task) {
+    updateTask(taskId, task);
     setTasks((tasks) => ({
       ...tasks,
       [taskId]: task
     }));
-    //updateTask(task);
-
+    
     if (task.childIds.length > 0) {
       if (task.childCollapsed) {
         task.childIds.map((childId) => handleUpdateTask(childId, 
@@ -209,13 +207,18 @@ export default function App() {
       ...parent,
       childIds: parent.childIds.filter(id => id !== taskId)
     };
-    setTasks({
+    
+    updateTask(parentId, newParent);
+    setTasks((tasks) => ({
       ...tasks,
       [parentId]: newParent
-    });
-    //updateTask(newParent);
+    }));
 
-    // Need to delete
+    deleteTask(taskId);
+    setTasks((tasks) => {
+      delete tasks[taskId];
+      return tasks;
+    });
   }
 
   // Define filter button list
@@ -232,25 +235,28 @@ export default function App() {
     <>
       <h2>Task Manager - {filter}</h2>
       {filterList}
-      <ul>
-        {taskIds.map((id) => (
-          <TaskTree 
-            key={id}
-            id={id}
-            parentId={0}
-            tasksById={tasks}
-            filter={FILTER_MAP[filter]}
-            tasksLock={tasksLock}
-            onUpdateTasksLock={setTasksLock}
-            onUpdateActiveTaskId={setActiveTaskId}
-            onCompleteTask={handleCompleteTask}
-            onCollapseTask={handleCollapseTask}
-            onDeleteTask={handleDeleteTask}
-            onUpdateFormText={setFormText}
-            onUpdateFormState={setFormState}
-          />))}
-      </ul>
+        {tasks[rootId].childIds.length > 0 &&
+          <ul>
+            {tasks[rootId].childIds.map((id) => (
+              <TaskTree 
+                key={id}
+                id={id}
+                parentId={rootId}
+                tasksById={tasks}
+                filter={FILTER_MAP[filter]}
+                tasksLock={tasksLock}
+                onUpdateTasksLock={setTasksLock}
+                onUpdateActiveTaskId={setActiveTaskId}
+                onCompleteTask={handleCompleteTask}
+                onCollapseTask={handleCollapseTask}
+                onDeleteTask={handleDeleteTask}
+                onUpdateFormText={setFormText}
+                onUpdateFormState={setFormState}
+              />))}
+          </ul>
+        }
       <Form
+        rootId={rootId}
         tasksById={tasks}
         activeTaskId={activeTaskId}
         formText={formText}

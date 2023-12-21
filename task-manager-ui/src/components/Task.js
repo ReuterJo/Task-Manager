@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Task({task, parentId, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onComplete, onCollapse, onDelete, onUpdateFormText, onUpdateFormState}) {
+export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onComplete, onCollapse, onDelete, onUpdateFormText, onUpdateFormState}) {
     let taskOptions;
     let showSubtasks;
 
@@ -11,17 +11,17 @@ export default function Task({task, parentId, tasksLock, onUpdateTasksLock, onUp
                 onClick={() => {
                     onUpdateTasksLock(true);
                     onUpdateFormText(task.text);
-                    onUpdateActiveTaskId(task.id);
+                    onUpdateActiveTaskId(taskId);
                     onUpdateFormState('Edit Task');
             }}>
                 Edit
             </button>
-            <button onClick={() => onDelete(task.id, parentId)}>Delete</button>
+            <button onClick={() => onDelete(taskId, parentId)}>Delete</button>
             <button 
                 onClick={() => {
                     onUpdateTasksLock(true);
                     onUpdateFormText('');
-                    onUpdateActiveTaskId(task.id);
+                    onUpdateActiveTaskId(taskId);
                     onUpdateFormState('Add Subtask');
             }}>
                 Add Subtask
@@ -33,7 +33,7 @@ export default function Task({task, parentId, tasksLock, onUpdateTasksLock, onUp
         showSubtasks = (
             <button
                 onClick={() => {
-                    onCollapse(task.id, {
+                    onCollapse(taskId, {
                         ...task,
                         childCollapsed: false,
                     });
@@ -47,7 +47,7 @@ export default function Task({task, parentId, tasksLock, onUpdateTasksLock, onUp
         showSubtasks = (
             <button
                 onClick={() => {
-                    onCollapse(task.id, {
+                    onCollapse(taskId, {
                         ...task,
                         childCollapsed: true,
                     });
@@ -86,7 +86,7 @@ export default function Task({task, parentId, tasksLock, onUpdateTasksLock, onUp
                 type="checkbox"
                 checked={task.done}
                 onChange={(e) => {
-                    onComplete(task.id, {
+                    onComplete(taskId, {
                         ...task,
                         done: e.target.checked,
                     });
