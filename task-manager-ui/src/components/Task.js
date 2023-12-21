@@ -102,13 +102,13 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
     }
 
     return (
-        <label>
-            <div style={{ width: '100%' }}>
-                <Box sx={{ display: 'flex'}}>
-                    <Box sx={{ flexGrow: 1}}>
+        <div style={{ width: '100%' }}>
+            <Box sx={{ display: 'flex'}}>
+                <Box sx={{ flexGrow: 1}}>
+                    <label>
                         <Checkbox 
                             checked={task.done}
-                            onChange={(e) => {
+                            onClick={(e) => {
                                 onComplete(taskId, {
                                     ...task,
                                     done: e.target.checked,
@@ -116,13 +116,13 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
                             }}
                         />
                         {task.text}
-                    </Box>
-                    <Box>
-                        {showSubtasks}
-                        {taskOptions}
-                    </Box>
+                    </label>
                 </Box>
-            </div>
-        </label>
+                <Box>
+                    {showSubtasks}
+                    {taskOptions}
+                </Box>
+            </Box>
+        </div>
     );
 }

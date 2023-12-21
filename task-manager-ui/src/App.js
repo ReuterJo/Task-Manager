@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { userImmer } from 'use-immer';
+import { useImmer, userImmer } from 'use-immer';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton'
@@ -21,7 +21,7 @@ const FILTER_NAMES = Object.keys(FILTER_MAP);
 export default function App() {
   // Define states
   const [rootId, setRootId] = useState(null);
-  const [tasks, setTasks] = useState({});
+  const [tasks, setTasks] = useImmer({});
   const [filter, setFilter] = useState("All");
   const [formText, setFormText] = useState('');
   const [formState, setFormState] = useState('Hidden');
@@ -43,15 +43,17 @@ export default function App() {
       childCollapsed: false,
     };
     const newTaskId = await addTask(newTask);
-    setTasks((tasks) => ({
-      ...tasks,
-      [newTaskId]: newTask,
-    }));
+    setTasks(draft => {
+      draft[newTaskId] = newTask;
+    });
 
     const parent = tasks[parentId];
-    parent.childIds.push(newTaskId)
+    let children = [];
+    Object.assign(children, parent.childIds);   
+    children.push(newTaskId);
     const newParent = {
       ...parent,
+      childIds: children,
     }
 
     handleUpdateTask(parentId, newParent);
@@ -60,10 +62,9 @@ export default function App() {
   // Update task upon edit
   function handleUpdateTask(taskId, task) {
     updateTask(taskId, task);
-    setTasks((tasks) => ({
-      ...tasks,
-      [taskId]: task
-    }));
+    setTasks(draft => {
+      draft[taskId] = task;
+    });
   }
 
   // Complete task and all children tasks
@@ -92,15 +93,8 @@ export default function App() {
 
   // Collapse children tasks and updates parent task
   function handleCollapseTask(taskId, task) {
-    // handleUpdateTask(taskId, task);
-    // updateTask(taskId, task);
-    /*
-    setTasks((tasks) => ({
-      ...tasks,
-      [taskId]: task
-    }));
-    */
-
+    
+    handleUpdateTask(taskId, task);
     
     if (task.childIds.length > 0) {
       if (task.childCollapsed) {
@@ -121,6 +115,7 @@ export default function App() {
   // Delete reference from parent tasks
   function handleDeleteTask(taskId, parentId) {
     const parent = tasks[parentId];
+    const task = tasks[taskId];
     const newParent = {
       ...parent,
       childIds: parent.childIds.filter(id => id !== taskId)
@@ -129,10 +124,25 @@ export default function App() {
     handleUpdateTask(parentId, newParent);
 
     deleteTask(taskId);
-    setTasks((tasks) => {
-      delete tasks[taskId];
-      return tasks;
+    setTasks(draft => {
+      delete draft[taskId];
     });
+
+    if (task.childIds.length > 0) {
+      task.childIds.map((childId) => handleDeleteTaskHelper(childId, tasks[childId]));
+    }
+  }
+
+  // Helper function that helps delete child tasks
+  function handleDeleteTaskHelper(taskId, task){
+    deleteTask(taskId);
+    setTasks(draft => {
+      delete draft[taskId];
+    });
+
+    if (task.childIds.length > 0) {
+      task.childIds.map((childId) => handleDeleteTaskHelper(childId, tasks[childId]));
+    }
   }
 
   // Define filter button list
