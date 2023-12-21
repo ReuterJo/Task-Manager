@@ -2,7 +2,6 @@ import React from 'react';
 import Task from './Task'
 
 export default function TaskTree({id, parentId, tasksById, filter, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onCompleteTask, onCollapseTask, onDeleteTask, onUpdateFormText, onUpdateFormState}) {    
-    console.log(tasksById);
     const task = tasksById[id];
     const childIds = task.childIds;
 
