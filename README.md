@@ -1,6 +1,6 @@
 # Description
 
-This is a full stack task manager application developed using React and MongoDB.
+This is a full stack task manager application developed using the Node.js framework. The frontend is built with React and the backend is managed with MongoDB.
 
 # Setup
 
