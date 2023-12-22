@@ -7,6 +7,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 
 
 export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLock, onUpdateActiveTaskId, onComplete, onCollapse, onDelete, onUpdateFormText, onUpdateFormState}) {
@@ -16,55 +17,65 @@ export default function Task({task, taskId, parentId, tasksLock, onUpdateTasksLo
     // Show tasks options enabled if tasks are not locked
     taskOptions = (
         <>
-            <IconButton 
-                onClick={() => {
-                    onUpdateTasksLock(true);
-                    onUpdateFormText(task.text);
-                    onUpdateActiveTaskId(taskId);
-                    onUpdateFormState('Edit Task');
-            }}>
-                <EditIcon />
-            </IconButton>
-            <IconButton 
-                onClick={() => {
-                    onUpdateTasksLock(true);
-                    onUpdateFormText('');
-                    onUpdateActiveTaskId(taskId);
-                    onUpdateFormState('Add Subtask');
-            }}>
-                <AddIcon />
-            </IconButton>
-            <IconButton onClick={() => onDelete(taskId, parentId)}>
-                <DeleteIcon />
-            </IconButton>            
+            <Tooltip title="Edit Task">
+                <IconButton 
+                    onClick={() => {
+                        onUpdateTasksLock(true);
+                        onUpdateFormText(task.text);
+                        onUpdateActiveTaskId(taskId);
+                        onUpdateFormState('Edit Task');
+                }}>
+                    <EditIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Add Subtask">
+                <IconButton 
+                    onClick={() => {
+                        onUpdateTasksLock(true);
+                        onUpdateFormText('');
+                        onUpdateActiveTaskId(taskId);
+                        onUpdateFormState('Add Subtask');
+                }}>
+                    <AddIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete Task">
+                <IconButton onClick={() => onDelete(taskId, parentId)}>
+                    <DeleteIcon />
+                </IconButton>
+            </Tooltip>            
         </>
     );
 
     if (task.childIds.length > 0 && task.childCollapsed) {
         showSubtasks = (
-            <IconButton
-                onClick={() => {
-                    onCollapse(taskId, {
-                        ...task,
-                        childCollapsed: false,
-                    });
-                }}>
-                <ArrowDropDownIcon />
-            </IconButton>
+            <Tooltip title="Show Subtasks">
+                <IconButton
+                    onClick={() => {
+                        onCollapse(taskId, {
+                            ...task,
+                            childCollapsed: false,
+                        });
+                    }}>
+                    <ArrowDropDownIcon />
+                </IconButton>
+            </Tooltip>
         );
     }
     
     if (task.childIds.length > 0 && !task.childCollapsed) {
         showSubtasks = (
-            <IconButton
-                onClick={() => {
-                    onCollapse(taskId, {
-                        ...task,
-                        childCollapsed: true,
-                    });
-                }}>
-                <ArrowDropUpIcon />
-            </IconButton>
+            <Tooltip title="Hide Subtasks">
+                <IconButton
+                    onClick={() => {
+                        onCollapse(taskId, {
+                            ...task,
+                            childCollapsed: true,
+                        });
+                    }}>
+                    <ArrowDropUpIcon />
+                </IconButton>
+            </Tooltip>
         );
     }
     

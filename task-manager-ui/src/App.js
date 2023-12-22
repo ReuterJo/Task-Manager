@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { useImmer, userImmer } from 'use-immer';
+import { useImmer } from 'use-immer';
 import TaskTree from './components/TaskTree';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton'
@@ -31,7 +31,7 @@ export default function App() {
   // Load tasks from database upon mounting
   useEffect(() => {
     loadTasks(setRootId, setTasks);
-  }, []);
+  }, [setTasks]);
 
   // Add a new task and update the parent task
   async function handleAddTask(parentId, text) {
